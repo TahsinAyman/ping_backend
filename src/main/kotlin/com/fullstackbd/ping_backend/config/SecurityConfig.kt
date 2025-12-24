@@ -1,5 +1,6 @@
 package com.fullstackbd.ping_backend.config
 
+import com.fullstackbd.ping_backend.config.filter.AuthenticationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
@@ -13,10 +14,13 @@ import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @EnableWebSecurity
 @Configuration
-class SecurityConfig {
+class SecurityConfig(
+    private val authenticationFilter: AuthenticationFilter,
+) {
     @Bean
     @ConditionalOnMissingBean(UserDetailsService::class)
     fun inMemoryUserDetailsManager(): InMemoryUserDetailsManager {
@@ -28,6 +32,7 @@ class SecurityConfig {
                 .build()
         )
     }
+
     @Bean
     @ConditionalOnMissingBean(AuthenticationEventPublisher::class)
     fun defaultAuthenticationEventPublisher(delegate: ApplicationEventPublisher): DefaultAuthenticationEventPublisher {
@@ -43,14 +48,12 @@ class SecurityConfig {
             }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/public")
+                    .requestMatchers("/api/auth/register")
                     .permitAll()
                     .anyRequest()
                     .authenticated()
             }
-
-
+            .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
-
 }

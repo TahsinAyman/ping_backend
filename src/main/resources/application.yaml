@@ -1,3 +1,19 @@
 spring:
   application:
     name: ping_backend
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ping
+    username: postgres
+    password: 123456
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+jwt:
+  secret: bb41782da20c98d86a71872d78ade950572dae023fc9c29207fc336f94491cad
+  expiration: 3600
