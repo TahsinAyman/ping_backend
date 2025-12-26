@@ -9,9 +9,7 @@ import tools.jackson.databind.ObjectMapper
 import java.util.*
 
 @Component
-class JwtService(
-    private val objMapper: ObjectMapper
-): TokenService<User> {
+class JwtService: TokenService<String> {
 
     @Value($$"${jwt.secret}")
     private lateinit var secret: String
@@ -19,21 +17,19 @@ class JwtService(
     @Value($$"${jwt.expiration}")
     private var expiration: Int = 3600
 
-    override fun encode(obj: User): String {
+    override fun encode(obj: String): String {
         val now = Date()
         val expiry = Date(now.time + expiration * 1000)
-        val userJson = objMapper.writeValueAsString(obj)
-
         return Jwts
             .builder()
-            .setSubject(userJson)
+            .setSubject(obj)
             .setExpiration(expiry)
             .setIssuedAt(now)
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))
             .compact()
     }
 
-    override fun decode(token: String): User {
+    override fun decode(token: String): String {
         val sub: String = Jwts
             .parserBuilder()
             .setSigningKey(Keys.hmacShaKeyFor(secret.toByteArray()))
@@ -41,7 +37,7 @@ class JwtService(
             .parseClaimsJws(token)
             .body
             .subject
-        return objMapper.readValue(sub, User::class.java)
+        return sub
     }
 
 }

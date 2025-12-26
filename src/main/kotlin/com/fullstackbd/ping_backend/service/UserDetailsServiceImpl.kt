@@ -14,7 +14,7 @@ class UserDetailsServiceImpl(
 ) : UserDetailsService {
 
     @Throws(UserNotFoundException::class)
-    @Cacheable(value = ["users"])
+    @Cacheable("users")
     override fun loadUserByUsername(username: String): UserDetails {
         val user = this.userRepository.findFirstByEmail(username)
             ?: throw UserNotFoundException("User not found by email: $username")

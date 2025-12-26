@@ -2,11 +2,13 @@ package com.fullstackbd.ping_backend.config
 
 import com.fullstackbd.ping_backend.config.filter.AuthenticationFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -16,11 +18,14 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+
 @EnableWebSecurity
+@EnableMethodSecurity
 @Configuration
 class SecurityConfig(
-    private val authenticationFilter: AuthenticationFilter,
+    private val authenticationFilter: AuthenticationFilter
 ) {
+
     @Bean
     @ConditionalOnMissingBean(UserDetailsService::class)
     fun inMemoryUserDetailsManager(): InMemoryUserDetailsManager {
@@ -48,7 +53,16 @@ class SecurityConfig(
             }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth/register")
+                    .requestMatchers(
+                        "/api/auth/register",
+                        "/api/docs.html",
+                        "/api/auth/login",
+                        "/api/auth/verify",
+                        "/api/auth/send-otp",
+                        "/api/swagger-ui/**",
+                        "/v3/**",
+                        "/actuator/**"
+                    )
                     .permitAll()
                     .anyRequest()
                     .authenticated()

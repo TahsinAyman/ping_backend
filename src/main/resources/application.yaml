@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: noreply.tahsin@gmail.com
+    password: wipwsavmssfduhud
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: ping_backend
   h2:
@@ -14,6 +25,21 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=${jwt.expiration}s
+
 jwt:
   secret: bb41782da20c98d86a71872d78ade950572dae023fc9c29207fc336f94491cad
   expiration: 3600
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /api/docs.html
+management:
+  endpoints:
+    web:
+      exposure:
+        include: caches

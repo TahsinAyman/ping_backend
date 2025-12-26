@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ServiceRepository : JpaRepository<AppService, Long> {
+    fun findFirstByName(name: String): AppService?
 }
